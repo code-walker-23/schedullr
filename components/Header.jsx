@@ -3,10 +3,11 @@ import Link from "next/link";
 import React from "react";
 import { Button } from "./ui/button";
 import { PenBox } from "lucide-react";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 const Header = () => {
   return (
-    <nav className="mx-auto py-2 px-4 flex justify-between ">
+    <nav className="mx-auto py-2 px-4 flex justify-between items-center shadow-md border-b-2">
       <Link href={"/"} className="flex items-center">
         <Image
           alt="logo"
@@ -24,7 +25,14 @@ const Header = () => {
             Create Event
           </Button>
         </Link>
-        <Button variant="outline">Login</Button>
+        <SignedOut>
+          <SignInButton forceRedirectUrl="/dashboard">
+            <Button variant="outline">Login</Button>
+          </SignInButton>
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </div>
     </nav>
   );
