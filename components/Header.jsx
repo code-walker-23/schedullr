@@ -18,6 +18,7 @@ const Header = async () => {
           width={"150"}
           height={"60"}
           className="h-16 w-auto"
+          priority
         />
       </Link>
 
