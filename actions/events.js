@@ -61,3 +61,36 @@ export async function getUserEvents() {
     throw new Error(`Error fetching events: ${error.message}`); // Include original error message
   }
 }
+
+export async function deleteEvent(eventId) {
+  const { userId } = auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const user = await db.user.findUnique({
+    where: { clerkUserId: userId },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  try {
+    const event = await db.event.findUnique({
+      where: { id: eventId },
+    });
+    if (!event || event.userId !== user.id) {
+      throw new Error("Event not Found or Unauthorized");
+    }
+
+    await db.event.delete({
+      where: { id: eventId },
+    });
+
+    return { succes: true };
+  } catch (error) {
+    console.error("Error deleting events:", error);
+    throw new Error(`Error deleting events: ${error.message}`); // Include original error message
+  }
+}

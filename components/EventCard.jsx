@@ -11,17 +11,12 @@ import { Button } from "./ui/button";
 import { Link, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useFetch } from "@/hooks/useFetch";
+import { deleteEvent } from "@/actions/events";
 
 const EventCard = ({ event, username, isPublic = false }) => {
   const [isCopied, setIsCopied] = useState(false);
   const router = useRouter();
-  // Determine if the event should be displayed based on the isPublic flag
-  const shouldDisplay = isPublic ? !event.isPrivate : true;
-
-  // If the event shouldn't be displayed, return null
-  if (!shouldDisplay) {
-    return null;
-  }
 
   const handleCopy = async () => {
     try {
@@ -36,6 +31,20 @@ const EventCard = ({ event, username, isPublic = false }) => {
       console.error("Error copied", error);
     }
   };
+  const { error, loading, fetchData } = useFetch(deleteEvent);
+  const handleDelete = async (eventId) => {
+    if (window?.confirm("Are you sure , you want delete this event?")) {
+      await fetchData(eventId);
+      router.refresh();
+    }
+  };
+  // Determine if the event should be displayed based on the isPublic flag
+  const shouldDisplay = isPublic ? !event.isPrivate : true;
+
+  // If the event shouldn't be displayed, return null
+  if (!shouldDisplay) {
+    return null;
+  }
 
   return (
     <Card className="flex flex-col justify-between cursor-pointer">
@@ -61,8 +70,15 @@ const EventCard = ({ event, username, isPublic = false }) => {
             <Link className="mr-2 h-4 w-4" />{" "}
             {isCopied ? "Copied!" : "Copy Link"}
           </Button>
-          <Button variant="destructive">
-            <Trash2 className="mr-2 h-4 w-4" /> Delete
+          <Button
+            variant="destructive"
+            onClick={() => {
+              handleDelete(event.id);
+            }}
+            disabled={loading}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />{" "}
+            {loading ? "Deleting..." : "Delete"}
           </Button>
         </CardFooter>
       )}
