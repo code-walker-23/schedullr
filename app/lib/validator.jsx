@@ -22,7 +22,7 @@ export const eventSchema = z.object({
     .min(1, "Description is required")
     .max(500, "Description must be 500 characters or less"),
 
-  duartion: z.number().int().positive("Duration must be positive"),
+  duration: z.number().int().positive("Duration must be positive"),
 
   isPrivate: z.boolean(),
 });

@@ -1,3 +1,4 @@
+"use client";
 import { eventSchema } from "@/app/lib/validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
@@ -10,8 +11,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "./ui/button";
+import { useFetch } from "@/hooks/useFetch";
+import { createEvent } from "@/actions/events";
+import { useRouter } from "next/navigation";
 
 const EventForm = ({ onSubmitForm, initialData = {} }) => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -24,7 +29,16 @@ const EventForm = ({ onSubmitForm, initialData = {} }) => {
       isPrivate: true,
     },
   });
-  const onSubmit = () => {};
+  const { loading, error, fetchData } = useFetch(createEvent);
+
+  const onSubmit = async (data) => {
+    console.log("hello")
+    await fetchData(data);
+    if (!loading && !error) {
+      onSubmitForm();
+    }
+    router.refresh();
+  };
   return (
     <form
       className="px-5 flex flex-col gap-4"
@@ -107,7 +121,10 @@ const EventForm = ({ onSubmitForm, initialData = {} }) => {
           </p>
         )}
       </div>
-      <Button type="submit">Submit</Button>
+      {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+      <Button type="submit" disabled={loading}>
+        {loading ? "Submitting..." : "Create Event"}
+      </Button>
     </form>
   );
 };
