@@ -58,6 +58,7 @@ const AvailabilityForm = ({ initialData }) => {
                     checked={field.value}
                     onCheckedChange={(checked) => {
                       setValue(`${day}.isAvailable`, checked);
+
                       if (!checked) {
                         setValue(`${day}.startTime`, "09:00");
                         setValue(`${day}.endTime`, "17:00");

@@ -36,10 +36,10 @@ export async function getuserAvailability() {
     "sunday",
   ].forEach((day) => {
     const foundDay = user.availability.days.find(
-      (data) => data.day === day.toUpperCase
+      (data) => data.day === day.toUpperCase()
     );
     availabilityData[day] = {
-      isAvailable: !!foundDay, // it converst into the boolean
+      isAvailable: !!foundDay, // it convert into the boolean
       startTime: foundDay
         ? foundDay.startTime.toISOString().slice(11, 16)
         : "09:00",
