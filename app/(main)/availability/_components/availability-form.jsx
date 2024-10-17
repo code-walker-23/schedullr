@@ -13,6 +13,8 @@ import {
 import { timeSlots } from "../data";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useFetch } from "@/hooks/useFetch";
+import { updateUserAvailability } from "@/actions/availablity";
 
 const AvailabilityForm = ({ initialData }) => {
   const {
@@ -26,9 +28,14 @@ const AvailabilityForm = ({ initialData }) => {
     resolver: zodResolver(availabilitySchema),
     defaultValues: { ...initialData },
   });
-  console.log(initialData);
+
+  const { loading, error, fetchData } = useFetch(updateUserAvailability);
+  const onSubmit = async (data) => {
+    await fetchData(data);
+  };
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {[
         "monday",
         "tuesday",
@@ -45,7 +52,7 @@ const AvailabilityForm = ({ initialData }) => {
             <Controller
               name={`${day}.isAvailable`}
               control={control}
-              render={(field) => {
+              render={({ field }) => {
                 return (
                   <Checkbox
                     checked={field.value}
@@ -68,9 +75,12 @@ const AvailabilityForm = ({ initialData }) => {
                 <Controller
                   name={`${day}.startTime`}
                   control={control}
-                  render={(field) => {
+                  render={({ field }) => {
                     return (
-                      <Select onValueChange={field.change} value={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <SelectTrigger className="w-32">
                           <SelectValue placeholder="Start Time" />
                         </SelectTrigger>
@@ -91,9 +101,12 @@ const AvailabilityForm = ({ initialData }) => {
                 <Controller
                   name={`${day}.endTime`}
                   control={control}
-                  render={(field) => {
+                  render={({ field }) => {
                     return (
-                      <Select onValueChange={field.change} value={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <SelectTrigger className="w-32">
                           <SelectValue placeholder="End Time" />
                         </SelectTrigger>
@@ -110,8 +123,9 @@ const AvailabilityForm = ({ initialData }) => {
                     );
                   }}
                 />
-                {errors[day]?.endTime && (
-                  <span className="text-red text-sm ml-2">
+                {/* // day is variable -> bracket notation */}
+                {errors?.[day]?.endTime && (
+                  <span className="text-red-500 text-sm ml-2">
                     {errors[day].endTime.message}
                   </span>
                 )}
@@ -121,7 +135,7 @@ const AvailabilityForm = ({ initialData }) => {
         );
       })}
       <div className="flex items-center space-x-4">
-        <span className="w-32">Minimum gap before booking (minutes):</span>
+        <span className="w-48">Minimum gap before booking (minutes):</span>
         <Input
           type="number"
           {...register("timeGap", {
@@ -131,12 +145,15 @@ const AvailabilityForm = ({ initialData }) => {
         />
         {errors?.timeGap && (
           <span className="text-red text-sm ml-2">
-            {errors[day].endTime.message}
+            {errors.timeGap.message}
           </span>
         )}
       </div>
-      <Button type="submit" className="mt-5">
-        Update Availability
+      {error && (
+        <span className="text-red-500 text-sm ml-2">{error.message}</span>
+      )}
+      <Button type="submit" className="mt-5" disabled={loading}>
+        {loading ? "Updating..." : "Update Availability"}
       </Button>
     </form>
   );

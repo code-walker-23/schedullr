@@ -7,7 +7,7 @@ export async function getuserAvailability() {
   if (!userId) {
     throw new Error("Unauthorized");
   }
-
+  console.log("hello");
   const user = await db.user.findUnique({
     where: { clerkUserId: userId },
     include: {
@@ -50,4 +50,60 @@ export async function getuserAvailability() {
   });
 
   return availabilityData;
+}
+
+export async function updateUserAvailability(data) {
+  const { userId } = auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+  const user = await db.user.findUnique({
+    where: { clerkUserId: userId },
+    include: {
+      availability: true,
+    },
+  });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const availabilityData = Object.entries(data).flatMap(
+    ([day, { isAvailable, startTime, endTime }]) => {
+      if (isAvailable) {
+        const baseDate = new Date().toISOString().split("T")[0];
+        return [
+          {
+            day: day.toUpperCase(),
+            startTime: new Date(`${baseDate}T${startTime}:00Z`),
+            endTime: new Date(`${baseDate}T${endTime}:00Z`),
+          },
+        ];
+      }
+      return [];
+    }
+  );
+  // console.log(data, availabilityData);
+
+  if (user.availability) {
+    await db.availability.update({
+      where: { id: user.availability.id },
+      data: {
+        timeGap: data.timeGap,
+        days: {
+          deleteMany: {},
+          create: availabilityData,
+        },
+      },
+    });
+  } else {
+    await db.availability.create({
+      data: {
+        userId: user.id,
+        timeGap: data.timeGap,
+        days: {
+          create: availabilityData,
+        },
+      },
+    });
+  }
+  return { success: true };
 }
