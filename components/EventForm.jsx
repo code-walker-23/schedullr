@@ -32,7 +32,7 @@ const EventForm = ({ onSubmitForm, initialData = {} }) => {
   const { loading, error, fetchData } = useFetch(createEvent);
 
   const onSubmit = async (data) => {
-    console.log("hello")
+    console.log("hello");
     await fetchData(data);
     if (!loading && !error) {
       onSubmitForm();
@@ -58,7 +58,7 @@ const EventForm = ({ onSubmitForm, initialData = {} }) => {
       </div>
       <div>
         <label
-          htmlFor="title"
+          htmlFor="description"
           className="block text-sm font-medium text-gray-700"
         >
           Event Description
@@ -72,7 +72,7 @@ const EventForm = ({ onSubmitForm, initialData = {} }) => {
       </div>
       <div>
         <label
-          htmlFor="title"
+          htmlFor="duration"
           className="block text-sm font-medium text-gray-700"
         >
           Event Duration(min)
