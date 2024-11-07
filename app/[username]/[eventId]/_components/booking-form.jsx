@@ -38,7 +38,7 @@ export default function BookingForm({ event, availability }) {
     }
   }, [selectedTime, setValue]);
 
-  const { loading, data, fn: fnCreateBooking } = useFetch(createBooking);
+  const { loading, data, fetchData: fnCreateBooking } = useFetch(createBooking);
 
   const onSubmit = async (data) => {
     console.log("Form submitted with data:", data);
