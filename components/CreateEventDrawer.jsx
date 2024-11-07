@@ -28,7 +28,7 @@ const CreateEventDrawer = () => {
     setIsOpen(false);
     // if is not affecting anything
     if (searchParam.get("create") === "true") {
-      router.replace(window?.location?.pathname);
+      router.replace(window?.location?.pathname); // it will back to events after /events/?create=true
     }
   };
 

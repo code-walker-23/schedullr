@@ -60,6 +60,7 @@ const EventCard = ({ event, username, isPublic = false }) => {
       <CardContent>
         {event.description.substring(0, event.description.indexOf("."))}
       </CardContent>
+      {/* if it is not public we will use this inside event otherwise we will use this for custom pages  */}
       {!isPublic && (
         <CardFooter className="flex gap-2">
           <Button
