@@ -32,12 +32,20 @@ const EventCard = ({ event, username, isPublic = false }) => {
     }
   };
   const { error, loading, fetchData } = useFetch(deleteEvent);
+
   const handleDelete = async (eventId) => {
     if (window?.confirm("Are you sure , you want delete this event?")) {
       await fetchData(eventId);
       router.refresh();
     }
   };
+
+  const handleCardClick = (e) => {
+    if (e.target.tagName != "BUTTON" && e.target.tagName != "SVG") {
+      window?.open(`${window?.location.origin}/${username}/${event.id}`);
+    }
+  };
+
   // Determine if the event should be displayed based on the isPublic flag
   const shouldDisplay = isPublic ? !event.isPrivate : true;
 
@@ -47,7 +55,10 @@ const EventCard = ({ event, username, isPublic = false }) => {
   }
 
   return (
-    <Card className="flex flex-col justify-between cursor-pointer">
+    <Card
+      className="flex flex-col justify-between cursor-pointer"
+      onClick={handleCardClick}
+    >
       <CardHeader>
         <CardTitle className="text-2xl">{event.title}</CardTitle>
         <CardDescription className="flex justify-between">
