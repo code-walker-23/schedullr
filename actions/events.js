@@ -94,3 +94,23 @@ export async function deleteEvent(eventId) {
     throw new Error(`Error deleting events: ${error.message}`); // Include original error message
   }
 }
+
+export async function getEventDetail(username, eventId) {
+  const event = await db.event.first({
+    where: {
+      id: eventId,
+      user: {
+        username,
+      },
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+          email: true,
+          imageUrl: true,
+        },
+      },
+    },
+  });
+}
