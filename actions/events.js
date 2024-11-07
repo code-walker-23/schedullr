@@ -95,12 +95,12 @@ export async function deleteEvent(eventId) {
   }
 }
 
-export async function getEventDetail(username, eventId) {
-  const event = await db.event.first({
+export async function getEventDetails(username, eventId) {
+  const event = await db.event.findFirst({
     where: {
       id: eventId,
       user: {
-        username,
+        username: username,
       },
     },
     include: {
@@ -108,9 +108,42 @@ export async function getEventDetail(username, eventId) {
         select: {
           name: true,
           email: true,
+          username: true,
           imageUrl: true,
         },
       },
     },
   });
+  return event;
+}
+
+export async function getEventAvailability(eventId) {
+  const event = await db.event.findUnique({
+    where: {
+      id: eventId,
+    },
+    include: {
+      user: {
+        include: {
+          availability: {
+            select: {
+              days: true,
+              timeGap: true,
+            },
+          },
+          bookings: {
+            select: {
+              startTime: true,
+              endTime: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!event || !event.user.availability) {
+    return [];
+  }
+  const { availability, bookings } = event.user;
+  return event;
 }
